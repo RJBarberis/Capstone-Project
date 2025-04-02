@@ -14,5 +14,13 @@
         "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "myImage0"
+    },
+    "myImages.image3": {
+        "id": "myImages.image3",
+        "data": "hwQYABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P8AAAAAAAAAAAAAwLEAAAAAAAAA//8PH/sAAAAAAAD/3b38H7EAAAAAAPAbEd29H/sAAAAAAPAREb0czPEPAAAAAB8REfEfvf8PAAAAAB8REdER+///AAAAAB8REdERsf//AAAAAB8REfEf+///AAAAAPAREb0czbEPAAAAAPAbEd29H/sAAAAAAAD/3b38H7EAAAAAAAAA//8PH/sAAAAAAAAAAAAAz7EAAAAAAAAAAAAA8P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage1"
     }
 }
