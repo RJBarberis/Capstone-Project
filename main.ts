@@ -1,3 +1,9 @@
+namespace SpriteKind{
+    export const Moving_Enemies = SpriteKind.create()
+    export const Fruit = SpriteKind.create()
+}
+// #1
+// #2
 // Global variables
 let heroSprite: Sprite = null
 let projectile: Sprite = null
@@ -6,20 +12,39 @@ let projnum: number = null
 let laser: Sprite = null
 let laser2: Sprite = null
 let laser3: Sprite = null
+let fruit: Sprite = null
 let i: number = null
 let aliens: Sprite[] = []
 let out_of_screen: boolean = null
+// #1
+// #2
 // Functions
+// #3
 function createHeroSprite(): void {
     heroSprite = sprites.create(assets.image`myImage`, SpriteKind.Player)
     heroSprite.y = 110
-    controller.moveSprite(heroSprite)
+    controller.left.onEvent(ControllerButtonEvent.Pressed, function() {
+        heroSprite.vx = -100
+    })
+    controller.left.onEvent(ControllerButtonEvent.Released, function() {
+        heroSprite.vx = 0
+    })
+    controller.right.onEvent(ControllerButtonEvent.Pressed, function() {
+        heroSprite.vx = 100
+    })
+    controller.right.onEvent(ControllerButtonEvent.Released, function() {
+        heroSprite.vx = 0
+    })
+
+
     heroSprite.setFlag(SpriteFlag.StayInScreen, true)
 }
-function createEnemySprites(): void {
-    for (let i = 8; i < 56; i += 16) {
-        for (let j = 8; j < 144; j += 16) {
-            let myAlien = (sprites.create(assets.image`myImage1`, SpriteKind.Enemy))
+// #6
+// #10
+function createEnemySprites(rows: number, columns: number): void {
+    for (let i = 8; i < ((rows * 16) + 8); i += 16) {
+        for (let j = 8; j < ((columns * 16) + 8); j += 16) {
+            let myAlien = (sprites.create(assets.image`myImage1`, SpriteKind.Moving_Enemies))
             // #9
             myAlien.x = j;
             myAlien.y = i;
@@ -50,15 +75,16 @@ function createEnemySprites(): void {
         }
     }
 }
+// #4
 function createLasersSprites(): void {
     controller.A.onEvent(ControllerButtonEvent.Pressed, function() {
-        projnum = randint(1,3)
+        projnum = randint(1, 3)
         if (projnum == 1){
             laser = sprites.create(assets.image`myImage0`,SpriteKind.Projectile)
             laser.setFlag(SpriteFlag.AutoDestroy, true)
             laser.x = heroSprite.x
             laser.y = heroSprite.y
-            laser.vy = -30
+            laser.vy = -60
         }
         else if (projnum == 2) {
             laser2 = sprites.create(assets.image`myImage0`, SpriteKind.Projectile)
@@ -79,17 +105,42 @@ function createLasersSprites(): void {
     })
 }
 function createOverlap(): void {
-    sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite) {
+    sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Moving_Enemies, function(sprite: Sprite, otherSprite: Sprite) {
         sprites.destroy(otherSprite)
         sprites.destroy(sprite)
+        info.changeScoreBy(50)
     })
     
-    sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function(sprite: Sprite, otherSprite: Sprite) {
+    sprites.onOverlap(SpriteKind.Moving_Enemies, SpriteKind.Player, function(sprite: Sprite, otherSprite: Sprite) {
         game.gameOver(false)
     })
+    sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Fruit, function (sprite: Sprite, otherSprite: Sprite) {
+        sprites.destroy(otherSprite)
+        info.changeScoreBy(calculateScore(fruit))
+    })
 }
+// #7
+// #8
+// #9
+function calculateScore(Fruit: Sprite): number {
+    return Math.sqrt((fruit.x - heroSprite.x) ** 2 + (fruit.y - heroSprite.y) ** 2)
+}
+// #5
+function dropFruit(): void {
+        fruit = sprites.create(assets.image`myImage2`, SpriteKind.Fruit)
+        fruit.x = randint(8, 144)
+        fruit.y = 8
+        fruit.vy = 25
+        pause(randint(1000, 5000))
+        dropFruit()
+    
+}
+// #1
+// #2
 // on start
+// #11
 createHeroSprite()
-createEnemySprites()
+createEnemySprites(randint(1, 4), randint(1, 9))
 createLasersSprites()
 createOverlap()
+dropFruit()
