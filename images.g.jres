@@ -1,0 +1,50 @@
+{
+    "myImages.image1": {
+        "id": "myImages.image1",
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAPAPAAAAAPD///7gRAAA/+/v7k9NAPD/Lv/k/v8A8O/yv9EuQv//4vL+3yRC/y/i8k7dJFIPL+LyTt0kUg//4vL+3yRC//Dv8r/RLkL/8P8u/+T+/wAA/+7v7k9NAADw///+4EQAAAAA8A8AAAAAAAAAAAAAAA==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Player"
+    },
+    "myImages.image3": {
+        "id": "myImages.image3",
+        "data": "hwQOABAAAADw/wAAAAAAAP////8P4EQA///D//9OTQD/z8P89P//APA7zLzRvmP/z8zM9N80Y//PzExE3TRjD8/MTETdNGMPz8zM9N80Y//wO8y80b5j///Pw/z0//wA///D//9OTQD/////D+BEAPD/AAAAAAAA",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Enemy2"
+    },
+    "myImages.image2": {
+        "id": "myImages.image2",
+        "data": "hwQYABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P8AAAAAAAAAAAAAwLEAAAAAAAAA//8PH/sAAAAAAAD/3b38H7EAAAAAAPAbEd29H/sAAAAAAPAREb0czPEPAAAAAB8REfEfvf8PAAAAAB8REdER+///AAAAAB8REdERsf//AAAAAB8REfEf+///AAAAAPAREb0czbEPAAAAAPAbEd29H/sAAAAAAAD/3b38H7EAAAAAAAAA//8PH/sAAAAAAAAAAAAAz7EAAAAAAAAAAAAA8P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Enemy"
+    },
+    "myImages.image4": {
+        "id": "myImages.image4",
+        "data": "hwQQABAAAAAAAO4OiO7uAADsu+t3xusOwExEuy5mvg7AREVE7nLoy7xERETrYsjLTERERORizMRMREVE5HLsxEtERETkcujES0VEVORy6ORLRERE5GLs5EtERETkYuzku1REROtyzOSwRFRE7mLo5LBLRLQuxr4OAOxL63bM6w4AAOwOiO7uAA==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage0"
+    },
+    "myImages.image5": {
+        "id": "myImages.image5",
+        "data": "hwQQABAAAAAAAAC7q6oAAAAAuzMzow4AALAzMzMz6gAA2z0zMzPqDrDdMzMzM7oOsD0zszPTug7bPTOqM9NKDtszozoz00oO2zOjMzOtRA47MzszM61EDjozMzPTSrQOOjMzM61E5ACgMzPdSkTuAKA6M6pE5A4AAKqqRETuAAAAALu77gAAAA==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage2"
+    },
+    "myImages.image6": {
+        "id": "myImages.image6",
+        "data": "hwQQABAAAADg7u7u7u7u/n53d3d3d3f3fn93d3d39/d+d3d3d3d393537n53d3f3fufu/nd3d/d+5///d3d3937nf3fu5373fud/5+7v/vd+5+7u/3//93537u5/d3f3fnf3/393d/d+d3d3d3d3935/d3d3d/f3fnd3d3d3d/fw/////////w==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage"
+    }
+}

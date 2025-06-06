@@ -1,0 +1,20 @@
+{
+    "name": "color",
+    "description": "Color manipulation",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "colors.ts",
+        "colorbuffer.ts",
+        "README.md"
+    ],
+    "public": true,
+    "targetVersions": {
+        "target": "2.0.56",
+        "pxt": "11.3.59"
+    },
+    "searchOnly": true,
+    "weight": 1,
+    "icon": "./static/libs/color.png"
+}

@@ -1,18 +1,20 @@
 {
-    "name": "Unit 6: Capstone Project (ICS2)",
-    "description": "",
+    "name": "Capstone-Project",
+    "version": "0.0.0",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "animation": "*",
+        "light": "*",
+        "arcade-timers": "github:microsoft/arcade-timers#v1.1.0"
     },
     "files": [
-        "main.blocks",
         "main.ts",
-        "README.md",
-        "assets.json"
+        "tilemap.g.jres",
+        "tilemap.g.ts",
+        "images.g.jres",
+        "images.g.ts"
     ],
-    "testFiles": [
-        "test.ts"
-    ],
+    "testDependencies": {},
     "targetVersions": {
         "target": "2.0.56",
         "targetId": "arcade"
@@ -20,5 +22,23 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "blocksprj"
+    "preferredEditor": "tsprj",
+    "palette": [
+        "#000000",
+        "#FFFFFF",
+        "#D82800",
+        "#FF93C4",
+        "#FC9838",
+        "#ACD40C",
+        "#548CFC",
+        "#FFFF00",
+        "#048C04",
+        "#87F2FF",
+        "#D82800",
+        "#A4839F",
+        "#887000",
+        "#FCC6AC",
+        "#ED4F12",
+        "#000000"
+    ]
 }

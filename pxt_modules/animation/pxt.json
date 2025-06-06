@@ -1,0 +1,22 @@
+{
+    "name": "animation",
+    "description": "Advanced state based animations for sprites",
+    "dependencies": {
+        "game": "*"
+    },
+    "files": [
+        "README.md",
+        "legacy.ts",
+        "targetoverrides.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true,
+    "targetVersions": {
+        "target": "2.0.56",
+        "pxt": "11.3.59"
+    },
+    "weight": 80,
+    "icon": "./static/libs/animation.png"
+}
