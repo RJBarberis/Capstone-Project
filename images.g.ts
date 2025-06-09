@@ -69,7 +69,7 @@ f f f c 3 c c c c 3 c f f f
 ........................
 `;
             case "image4":
-            case "myImage0":return img`
+            case "HamburgerFood":return img`
 . . . . c c c b b b b b . . . . 
 . . c c b 4 4 4 4 4 4 b b b . . 
 . c c 4 4 4 4 4 5 4 4 4 4 b c . 
@@ -88,7 +88,7 @@ e e b e c c e e e e e c e b e e
 . . . c c c c c e e e e e . . . 
 `;
             case "image5":
-            case "myImage2":return img`
+            case "DonutFood":return img`
 . . . . . . b b b b a a . . . . 
 . . . . b b d d d 3 3 3 a a . . 
 . . . b d d d 3 3 3 3 3 3 a a . 
@@ -107,7 +107,7 @@ a a 3 3 3 d d d a a 4 4 4 e e .
 . . . . . . . . . . . . . . . . 
 `;
             case "image6":
-            case "myImage":return img`
+            case "QuestionSprite":return img`
 . e e e e e e e e e e e e e e . 
 e 7 7 7 7 7 7 7 7 7 7 7 7 7 7 f 
 e 7 f 7 7 7 7 7 7 7 7 7 7 f 7 f 

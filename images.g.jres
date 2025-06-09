@@ -29,7 +29,7 @@
         "dataEncoding": "base64",
         "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
-        "displayName": "myImage0"
+        "displayName": "HamburgerFood"
     },
     "myImages.image5": {
         "id": "myImages.image5",
@@ -37,7 +37,7 @@
         "dataEncoding": "base64",
         "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
-        "displayName": "myImage2"
+        "displayName": "DonutFood"
     },
     "myImages.image6": {
         "id": "myImages.image6",
@@ -45,6 +45,6 @@
         "dataEncoding": "base64",
         "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
-        "displayName": "myImage"
+        "displayName": "QuestionSprite"
     }
 }

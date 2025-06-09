@@ -2,8 +2,8 @@ namespace SpriteKind {
     export const Block = SpriteKind.create()
 }
 // Constants
-const GRAVITY = 100
-const JUMP_SPEED = -125
+const GRAVITY = 900
+const JUMP_SPEED = -350
 const ENEMY_SPEED = 75
 const FOOD_BOUNCE_SPEED = 75
 
@@ -113,10 +113,10 @@ function spawnEnemies() {
 }
 
 function spawnFoods() {
-    let food1 = new FoodSprite(assets.image`myImage0`, FOOD_BOUNCE_SPEED, 1)
+    let food1 = new FoodSprite(assets.image`DonutFood`, FOOD_BOUNCE_SPEED, 1)
     tiles.placeOnTile(food1, tiles.getTilesByType(assets.tile`foodTile`)[0])
 
-    let food2 = new FoodSprite(assets.image`myImage2`, -FOOD_BOUNCE_SPEED, 2)
+    let food2 = new FoodSprite(assets.image`HamburgerFood`, -FOOD_BOUNCE_SPEED, 2)
     tiles.placeOnTile(food2, tiles.getTilesByType(assets.tile`foodTile`)[1])
 
     game.onUpdate(function () {
@@ -132,8 +132,8 @@ function spawnFoods() {
 }
 
 function powerUpBlock() {
-    for (let tile of tiles.getTilesByType(assets.tile`myTile1`)) {
-        let block = sprites.create(assets.image`myImage`, SpriteKind.Block)
+    for (let tile of tiles.getTilesByType(assets.tile`question`)) {
+        let block = sprites.create(assets.image`QuestionSprite`, SpriteKind.Block)
         tiles.placeOnTile(block, tile)
         block.setFlag(SpriteFlag.Ghost, false)
     }
