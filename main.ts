@@ -211,6 +211,12 @@ function powerUpBlock() {
         }
     })
 }
+// function FlagPole() {
+//     let ph = tiles.getTilesByType(assets.tile`flagPole` && assets.tile`flagTop`)
+//     scene.onOverlapTile(SpriteKind.Player, ph, function(player, tile) {
+
+//     })
+// }
 
 // Animations
 function setupAnimations() {
