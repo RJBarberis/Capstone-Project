@@ -59,6 +59,8 @@ function spawnPlayer() {
     Player = sprites.create(assets.image`Player`, SpriteKind.Player)
     Player.ay = GRAVITY
     Player.fx = 400
+    tiles.placeOnTile(Player, tiles.getTileLocation(2, 13))
+    Player.x += 8
 
     scene.cameraFollowSprite(Player)
     scene.setBackgroundColor(6)
@@ -99,6 +101,7 @@ function spawnPlayer() {
             Player.vx = 0
         }
     })
+    scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y) - 20)
     game.onUpdate(function () {
     if (!(dead)) {
         if (Player.bottom - 8 - scene.cameraProperty(CameraProperty.Y) < -25) {
@@ -107,6 +110,7 @@ function spawnPlayer() {
         if (Player.bottom - 8 - scene.cameraProperty(CameraProperty.Y) > 25) {
             scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), Player.bottom - 8 + -25)
         }
+       
     }
         scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + (Player.x + Player.vx / 1.6 - scene.cameraProperty(CameraProperty.X)) / 10, scene.cameraProperty(CameraProperty.Y))
         if (Player.x - scene.cameraProperty(CameraProperty.X) < -30) {
@@ -121,8 +125,6 @@ function spawnPlayer() {
             Player.fx = 0
         }
     })
-    tiles.placeOnTile(Player, tiles.getTileLocation(2, 13))
-    Player.x += 8
 }
 
 function jumpHandler() {
@@ -130,10 +132,10 @@ function jumpHandler() {
         if (Player.isHittingTile(CollisionDirection.Bottom)) {
             Player.vy = JUMP_SPEED + Math.abs(Player.vx) / -50
             canDoubleJump = true
-        } else if (canDoubleJump) {
-            Player.vy = JUMP_SPEED
-            canDoubleJump = false
-        }
+        } // else if (canDoubleJump) {
+        //     Player.vy = JUMP_SPEED
+        //     canDoubleJump = false
+        // }
     })
 }
 
