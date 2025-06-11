@@ -1,16 +1,19 @@
 namespace SpriteKind {
     export const Block = SpriteKind.create()
 }
-// Constants
-const GRAVITY = 900
-const JUMP_SPEED = -350
-const ENEMY_SPEED = 75
-const FOOD_BOUNCE_SPEED = 75
-
 // Globals
 let Player: Sprite = null
 let canDoubleJump = false
 let isLevel2 = false
+let dead = false
+let cantMove = false
+
+// Constants
+const GRAVITY = 600
+const JUMP_SPEED = -290
+const ENEMY_SPEED = 75
+const FOOD_BOUNCE_SPEED = 75
+
 
 
 
@@ -55,21 +58,77 @@ class FoodSprite extends sprites.ExtendableSprite {
 function spawnPlayer() {
     Player = sprites.create(assets.image`Player`, SpriteKind.Player)
     Player.ay = GRAVITY
+    Player.fx = 400
+
     scene.cameraFollowSprite(Player)
     scene.setBackgroundColor(6)
-    controller.moveSprite(Player, 100, 0)
-    let placeholder = tiles.getTilesByType(sprites.dungeon.collectibleInsignia)
-    tiles.placeOnTile(Player, placeholder[0])
-    let ph = tiles.getTilesByType(sprites.dungeon.collectibleBlueCrystal)
-    scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleBlueCrystal, function (sprite, tile) {
-        switchTilemap()
+    game.onUpdate(function () {
+        if (!(dead)) {
+            if (!(cantMove)) {
+                if (controller.right.isPressed()) {
+                    if (Player.vy < 0) {
+                        Player.ax = 100
+                    } else {
+                        Player.ax = 400
+                    }
+                } else if (controller.left.isPressed()) {
+                    if (Player.vy < 0) {
+                        Player.ax = -100
+                    } else {
+                        Player.ax = -400
+                    }
+                } else {
+                    Player.ax = 0
+                }
+                if (controller.B.isPressed()) {
+                    if (Math.abs(Player.vx) > 175) {
+                        Player.vx = Player.vx / Math.abs(Player.vx) * 175
+                    }
+                } else {
+                    if (Math.abs(Player.vx) > 125) {
+                        Player.vx = Player.vx / Math.abs(Player.vx) * 125
+                    }
+                }
+            } else {
+                if (Math.abs(Player.vx) > 100) {
+                    Player.vx = Player.vx / Math.abs(Player.vx) * 100
+                }
+            }
+        } else {
+            Player.ax = 0
+            Player.vx = 0
+        }
     })
+    game.onUpdate(function () {
+    if (!(dead)) {
+        if (Player.bottom - 8 - scene.cameraProperty(CameraProperty.Y) < -25) {
+            scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), Player.bottom - 8 + 25)
+        }
+        if (Player.bottom - 8 - scene.cameraProperty(CameraProperty.Y) > 25) {
+            scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), Player.bottom - 8 + -25)
+        }
+    }
+        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + (Player.x + Player.vx / 1.6 - scene.cameraProperty(CameraProperty.X)) / 10, scene.cameraProperty(CameraProperty.Y))
+        if (Player.x - scene.cameraProperty(CameraProperty.X) < -30) {
+            scene.centerCameraAt(Player.x + 30, scene.cameraProperty(CameraProperty.Y))
+        }
+        if (Player.x - scene.cameraProperty(CameraProperty.X) > 30) {
+            scene.centerCameraAt(Player.x - 30, scene.cameraProperty(CameraProperty.Y))
+        }
+        if (Player.vy == 0) {
+            Player.fx = 400
+        } else {
+            Player.fx = 0
+        }
+    })
+    tiles.placeOnTile(Player, tiles.getTileLocation(2, 13))
+    Player.x += 8
 }
 
 function jumpHandler() {
     controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         if (Player.isHittingTile(CollisionDirection.Bottom)) {
-            Player.vy = JUMP_SPEED
+            Player.vy = JUMP_SPEED + Math.abs(Player.vx) / -50
             canDoubleJump = true
         } else if (canDoubleJump) {
             Player.vy = JUMP_SPEED
@@ -105,7 +164,7 @@ function spawnEnemies() {
                         e.wasStompedRecently = false
                     })
                 } else {
-                    game.over(false)
+                    // game.over(false)
                 }
             }
         }
@@ -149,19 +208,6 @@ function powerUpBlock() {
             player.ay = GRAVITY
         }
     })
-}
-
-function switchTilemap() {
-    isLevel2 = !isLevel2
-    if (isLevel2) {
-        scene.setTileMapLevel(assets.tilemap`level2`)
-    } else {
-        scene.setTileMapLevel(assets.tilemap`level1`)
-    }
-    spawnPlayer()
-    spawnEnemies()
-    spawnFoods()
-    powerUpBlock()
 }
 
 // Animations

@@ -1,0 +1,29 @@
+{
+    "name": "arcade-tile-util",
+    "version": "1.2.0",
+    "description": "",
+    "dependencies": {
+        "device": "*"
+    },
+    "files": [
+        "main.ts",
+        "README.md",
+        "assets.json",
+        "state.ts",
+        "api.ts",
+        "tiles.util.jres",
+        "tiles.util.ts",
+        "icon.png"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "1.8.20",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "tsprj"
+}
