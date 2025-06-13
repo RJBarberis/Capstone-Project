@@ -2,7 +2,7 @@ namespace SpriteKind {
     export const Block = SpriteKind.create()
     export const Layer = SpriteKind.create()
     export const ScoreParticle = SpriteKind.create()
-    
+
 }
 // Globals
 let Player: Sprite = null
@@ -19,6 +19,7 @@ let lastXVno0 = 0
 let powerUp: Sprite = null
 let QParticle: Sprite = null
 let enemy1: EnemySprite = null
+let hasMovedUp = false;
 let song = music.createSong(assets.song`overworld`)
 
 // Constants
@@ -32,22 +33,30 @@ const FOOD_BOUNCE_SPEED = 75
 
 // Classes
 class EnemySprite extends sprites.ExtendableSprite {
-    hp: number
-    wasStompedRecently: boolean
+    hp: number;
+    wasStompedRecently: boolean;
 
     constructor(img: Image, vx: number) {
-        super(img, SpriteKind.Enemy)
-        this.hp = 1
-        this.vx = -30
-        this.ay = 1000
-        this.wasStompedRecently = false
+        super(img, SpriteKind.Enemy);
+        this.hp = 1;
+        this.vx = -30;
+        this.ay = 1000;
+        this.wasStompedRecently = false;
     }
 
     hit() {
-        this.hp -= 1
-        this.setImage(assets.image`EnemySquish`)
+
+        if (this.wasStompedRecently) return;
+        this.wasStompedRecently = true;
+        this.ay = 0;
+        this.hp -= 1;
+        this.setImage(assets.image`EnemySquish`);
         if (this.hp <= 0) {
-            this.destroy(effects.none, 500)
+            this.destroy(effects.none, 300);
+        } else {
+            timer.after(200, () => {
+                this.wasStompedRecently = false;
+            });
         }
     }
 }
@@ -250,8 +259,9 @@ function spawnPlayer() {
                 }
             }
         }
+        info.setScore(coins)
     })
-    
+
 }
 
 function jumpHandler() {
@@ -266,6 +276,9 @@ function jumpHandler() {
 function spawnEnemies() {
     for (let location of tiles.getTilesByType(assets.tile`goombSpawn`)) {
         enemy1 = new EnemySprite(assets.image`Enemy`, ENEMY_SPEED)
+        animation.runImageAnimation(
+            enemy1,
+            [assets.image`Enemy`, assets.image`Enemy0`], 150, true)
         tiles.placeOnTile(enemy1, location)
     }
     game.onUpdate(function () {
@@ -275,38 +288,15 @@ function spawnEnemies() {
         }
     })
     sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-        if (!(sprites.readDataBoolean(otherSprite, "dead"))) {
-            if (sprites.readDataString(otherSprite, "type") == "G") {
-                if (sprite.vy > 0) {
-                    sprite.vy = -100
-                    sprite.y += -5
-                    sprites.setDataBoolean(otherSprite, "dead", true)
-                    otherSprite.vx = 0
-                    otherSprite.lifespan = 500
-                    animation.runImageAnimation(
-                    otherSprite,
-                    [img`
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . e e e e . . . . . . 
-                        . . . e e e e e e e e e e . . . 
-                        . e e f f f e e e e f f f e e . 
-                        e e d d d d f f f f d d d d e e 
-                        e e e e e e e e e e e e e e e e 
-                        . . . d d d d d d d d d d . . . 
-                        . . . . d d d d d d d d . . . . 
-                        . f f f f f . . . . f f f f f . 
-                        `],
-                    500,
-                    false
-                    )
-                    scoreParticle = sprites.create(img`
+        if (sprite.vy > 0) {
+            sprite.vy = -100
+            sprite.y += -5
+            sprites.setDataBoolean(otherSprite, "dead", true)
+            otherSprite.vx = 0
+            otherSprite.lifespan = 500
+            animation.stopAnimation(animation.AnimationTypes.All, otherSprite);
+            (otherSprite as EnemySprite).hit()
+            scoreParticle = sprites.create(img`
                         . . . 1 . . . 1 . . . 1 . . . . 
                         . . 1 1 . . 1 . 1 . 1 . 1 . . . 
                         . . . 1 . . 1 . 1 . 1 . 1 . . . 
@@ -324,82 +314,72 @@ function spawnEnemies() {
                         . . . . . . . . . . . . . . . . 
                         . . . . . . . . . . . . . . . . 
                         `, SpriteKind.ScoreParticle)
-                    scoreParticle.setPosition(otherSprite.x, otherSprite.y)
-                    music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                    music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                    music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                    timer.after(100, function () {
-                        music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                        music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                        music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                    })
-                } else if (sprite.bottom >= otherSprite.bottom && sprites.readDataNumber(Player, "inv") == 0) {
-                    if (sprites.readDataNumber(Player, "power") > 0) {
-                        sprites.setDataNumber(Player, "inv", 100)
-                        sprites.setDataNumber(Player, "power", 0)
-                        timer.throttle("psound", 5000, function () {
+            scoreParticle.setPosition(otherSprite.x, otherSprite.y)
+            scoreParticle.lifespan = 400;
+            music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            timer.after(100, function () {
+                music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+                music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+                music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            })
+        } else if (sprite.bottom >= otherSprite.bottom) {
+            if (sprites.readDataNumber(Player, "power") > 0) {
+                sprites.setDataNumber(Player, "inv", 100)
+                sprites.setDataNumber(Player, "power", 0)
+                timer.throttle("psound", 5000, function () {
+                    for (let index = 0; index < 5; index++) {
+                        music.play(music.createSoundEffect(WaveShape.Square, 910, 107, 255, 0, 175, SoundExpressionEffect.Vibrato, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+                    }
+                    timer.after(200, function () {
+                        for (let index = 0; index < 5; index++) {
+                            music.play(music.createSoundEffect(WaveShape.Square, 910, 107, 255, 0, 175, SoundExpressionEffect.Vibrato, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+                        }
+                        timer.after(200, function () {
                             for (let index = 0; index < 5; index++) {
                                 music.play(music.createSoundEffect(WaveShape.Square, 910, 107, 255, 0, 175, SoundExpressionEffect.Vibrato, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
                             }
-                            timer.after(200, function () {
-                                for (let index = 0; index < 5; index++) {
-                                    music.play(music.createSoundEffect(WaveShape.Square, 910, 107, 255, 0, 175, SoundExpressionEffect.Vibrato, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                                }
-                                timer.after(200, function () {
-                                    for (let index = 0; index < 5; index++) {
-                                        music.play(music.createSoundEffect(WaveShape.Square, 910, 107, 255, 0, 175, SoundExpressionEffect.Vibrato, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                                    }
-                                })
-                            })
                         })
-                    } else {
-                        die()
-                    }
-                } else if (sprites.readDataNumber(Player, "inv") > 100) {
-                    sprites.destroy(otherSprite)
-                    for (let index = 0; index < 3; index++) {
-                        music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                    }
-                    timer.after(100, function () {
-                        for (let index = 0; index < 3; index++) {
-                            music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-                        }
                     })
-                } else {
-                    
-                }
+                })
             } else {
-                
+                die()
             }
-        }
-    })
-    game.onUpdate(function () {
-        for (let enemy of sprites.allOfKind(SpriteKind.Enemy)) {
-            if (Player.overlapsWith(enemy)) {
-                let e = enemy as EnemySprite
-                if (e.wasStompedRecently) continue
-                let isStomp = Player.vy > 0 && Player.bottom <= enemy.top + 6
-                if (isStomp) {
-                    e.wasStompedRecently = true
-                    e.hit()
-                    Player.vy = JUMP_SPEED / 2
-                    timer.after(200, function () {
-                        e.wasStompedRecently = false
-                    })
-                } else {
-                    die()
+        } else if (sprites.readDataNumber(Player, "inv") > 100) {
+            sprites.destroy(otherSprite)
+            for (let index = 0; index < 3; index++) {
+                music.play(music.createSoundEffect(WaveShape.Square, 731, 553, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            }
+            timer.after(100, function () {
+                for (let index = 0; index < 3; index++) {
+                    music.play(music.createSoundEffect(WaveShape.Square, 954, 776, 0, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
                 }
-            }
+            })
         }
-    })
+    }
+        // game.onUpdate(function () {
+        //     for (let enemy of sprites.allOfKind(SpriteKind.Enemy)) {
+        //         if (Player.overlapsWith(enemy)) {
+        //             let e = enemy as EnemySprite
+        //             if (e.wasStompedRecently) continue
+        //             let isStomp = Player.vy > 0 && Player.bottom <= enemy.top + 6
+        //             if (isStomp) {
+        //                 e.wasStompedRecently = true
+        //                 e.hit()
+        //                 Player.vy = JUMP_SPEED / 2
+        //                 timer.after(200, function () {
+        //                     e.wasStompedRecently = false
+        //                 })
+        //             } else {
+        //                 die()
+        //             }
+        //         }
+        //     }
+    )
 }
 
 function spawnFoods() {
-    let food1 = new FoodSprite(assets.image`DonutFood`, FOOD_BOUNCE_SPEED, 1)
-    tiles.placeOnTile(food1, tiles.getTilesByType(assets.tile`foodTile`)[0])
-
-    let food2 = new FoodSprite(assets.image`HamburgerFood`, -FOOD_BOUNCE_SPEED, 2)
-    tiles.placeOnTile(food2, tiles.getTilesByType(assets.tile`foodTile`)[1])
 
     game.onUpdate(function () {
         for (let f of sprites.allOfKind(SpriteKind.Food)) {
@@ -408,21 +388,35 @@ function spawnFoods() {
         }
     })
 
-    sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (player, food) {
-        (food as FoodSprite).reward()
+    sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
+        sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
+            if (sprites.readDataString(otherSprite, "type") == "M" || sprites.readDataString(otherSprite, "type") == "F") {
+                if (sprites.readDataNumber(Player, "power") > 0) {
+                    sprites.setDataNumber(Player, "power", 2)
+                } else {
+                    sprites.setDataNumber(Player, "power", 1)
+                }
+            } else if (sprites.readDataString(otherSprite, "type") == "P") {
+                music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+                music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+            } else if (sprites.readDataString(otherSprite, "type") == "S") {
+                sprites.setDataNumber(Player, "inv", 750)
+            }
+            sprites.destroy(otherSprite)
+        })
     })
 }
 
 function powerUpBlock() {
-scene.onHitWall(SpriteKind.Player, function (sprite, location) {
-    if (location.bottom == sprite.top) {
-        sprite.vy = Math.abs(sprite.vy) / 2
-        music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-        music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-        music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-        music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
-        if (tiles.tileAtLocationEquals(location, assets.tile`question`) || tiles.tileAtLocationEquals(location, assets.tile`questionInvis`)) {
-            QParticle = sprites.create(img`
+    scene.onHitWall(SpriteKind.Player, function (sprite, location) {
+        if (location.bottom == sprite.top) {
+            sprite.vy = Math.abs(sprite.vy) / 2
+            music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            music.play(music.createSoundEffect(WaveShape.Square, 241, 0, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+            if (tiles.tileAtLocationEquals(location, assets.tile`question`) || tiles.tileAtLocationEquals(location, assets.tile`questionInvis`)) {
+                QParticle = sprites.create(img`
                 . f f f f f f f f f f f f f f . 
                 f e e e e e e e e e e e e e e f 
                 f e f e e e e e e e e e e f e f 
@@ -440,34 +434,14 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                 f e e e e e e e e e e e e e e f 
                 . f f f f f f f f f f f f f f .
                 `, SpriteKind.Projectile)
-            sprites.setDataNumber(QParticle, "yval", location.y)
-            sprites.setDataNumber(QParticle, "yrow", location.row)
-            sprites.setDataString(QParticle, "type", "Q")
-            tiles.setTileAt(location, assets.tile`transparency16`)
-            tiles.placeOnTile(QParticle, location)
-            if (QParticle.tileKindAt(TileDirection.Top, assets.tile`mushroomSpawner`)) {
-                if (sprites.readDataNumber(Player, "power") > 0) {
-                    powerUp = sprites.create(img`
-                        . . . . 1 1 1 1 1 1 1 1 . . . . 
-                        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-                        . 1 1 1 4 4 4 4 4 4 4 4 1 1 1 . 
-                        1 1 4 4 4 a a a a a a 4 4 4 1 1 
-                        1 1 4 4 4 a a a a a a 4 4 4 1 1 
-                        . 1 1 1 4 4 4 4 4 4 4 4 1 1 1 . 
-                        . . 1 1 1 1 1 1 1 1 1 1 1 1 . . 
-                        . . . . 1 1 1 1 1 1 1 1 . . . . 
-                        . . . . . . . 8 8 . . . . . . . 
-                        8 8 8 . . . . 8 8 . . . . 8 8 8 
-                        . 8 8 8 . . . 8 8 . . . 8 8 8 . 
-                        . 8 8 8 8 . . 8 8 . . 8 8 8 8 . 
-                        . . 8 8 8 8 . 8 8 . 8 8 8 8 . . 
-                        . . 8 8 8 8 . 8 8 . 8 8 8 8 . . 
-                        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-                        . . . . . . 8 8 8 8 . . . . . . 
-                        `, SpriteKind.Food)
-                    sprites.setDataString(powerUp, "type", "F")
-                } else {
-                    powerUp = sprites.create(img`
+                sprites.setDataNumber(QParticle, "yval", location.y)
+                sprites.setDataNumber(QParticle, "yrow", location.row)
+                sprites.setDataString(QParticle, "type", "Q")
+                tiles.setTileAt(location, assets.tile`transparency16`)
+                tiles.placeOnTile(QParticle, location)
+                if (QParticle.tileKindAt(TileDirection.Top, assets.tile`mushroomSpawner`)) {
+                    if (sprites.readDataNumber(Player, "power") != 0) {
+                        powerUp = sprites.create(img`
                         . . . . . . 4 4 4 4 . . . . . . 
                         . . . . . 4 4 4 4 e e . . . . . 
                         . . . . 4 4 4 4 e e e e . . . . 
@@ -485,12 +459,17 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . . . 1 1 1 1 1 1 4 1 . . . . 
                         . . . . . 1 1 1 1 4 1 . . . . . 
                         `, SpriteKind.Food)
-                    sprites.setDataString(powerUp, "type", "M")
-                }
-                tiles.placeOnTile(powerUp, location)
-                tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
-            } else if (QParticle.tileKindAt(TileDirection.Top, assets.tile`1upSpawner`)) {
-                powerUp = sprites.create(img`
+                        sprites.setDataString(powerUp, "type", "M")
+                        timer.after(200, () => {
+                            powerUp.y -= 16;
+                            powerUp.vx = lastXVno0 > 0 ? 60 : -60;
+                            powerUp.ay = GRAVITY;
+                        })
+                    }
+                    tiles.placeOnTile(powerUp, location)
+                    tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
+                } else if (QParticle.tileKindAt(TileDirection.Top, assets.tile`1upSpawner`)) {
+                    powerUp = sprites.create(img`
                     . . . . . . 4 4 4 4 . . . . . . 
                     . . . . . 4 4 4 4 8 8 . . . . . 
                     . . . . 4 4 4 4 8 8 8 8 . . . . 
@@ -508,16 +487,16 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                     . . . . 1 1 1 1 1 1 4 1 . . . . 
                     . . . . . 1 1 1 1 4 1 . . . . . 
                     `, SpriteKind.Food)
-                sprites.setDataString(powerUp, "type", "P")
-                tiles.placeOnTile(powerUp, location)
-                tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
-            } else {
-                coins += 1
-                music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
-            }
-        } else if (tiles.tileAtLocationEquals(location, assets.tile`brick`)) {
-            if (sprites.readDataNumber(sprite, "power") == 0 || !(tiles.tileAtLocationEquals(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`))) {
-                QParticle = sprites.create(img`
+                    sprites.setDataString(powerUp, "type", "P")
+                    tiles.placeOnTile(powerUp, location)
+                    tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
+                } else {
+                    coins += 1
+                    music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+                }
+            } else if (tiles.tileAtLocationEquals(location, assets.tile`brick`)) {
+                if (sprites.readDataNumber(sprite, "power") == 0 || !(tiles.tileAtLocationEquals(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`))) {
+                    QParticle = sprites.create(img`
                     d d d d d d d d d d d d d d d d 
                     e e e e e e e f e e e e e e e f 
                     e e e e e e e f e e e e e e e f 
@@ -535,13 +514,13 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                     e e e f e e e e e e e f e e e e 
                     f f f f f f f f f f f f f f f f 
                     `, SpriteKind.Projectile)
-                sprites.setDataNumber(QParticle, "yval", location.y)
-                sprites.setDataNumber(QParticle, "yrow", location.row)
-                sprites.setDataString(QParticle, "type", "B")
-                tiles.setTileAt(location, assets.tile`transparency16`)
-                tiles.placeOnTile(QParticle, location)
-                if (QParticle.tileKindAt(TileDirection.Top, assets.tile`starSpawner`)) {
-                    powerUp = sprites.create(img`
+                    sprites.setDataNumber(QParticle, "yval", location.y)
+                    sprites.setDataNumber(QParticle, "yrow", location.row)
+                    sprites.setDataString(QParticle, "type", "B")
+                    tiles.setTileAt(location, assets.tile`transparency16`)
+                    tiles.placeOnTile(QParticle, location)
+                    if (QParticle.tileKindAt(TileDirection.Top, assets.tile`starSpawner`)) {
+                        powerUp = sprites.create(img`
                         . . . . . . . . . . . . . . . . 
                         . . . . . . . . . . . . . . . . 
                         . . . . . . . . . . . . . . . . 
@@ -559,10 +538,10 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . . . . . . . . . . . . . . . 
                         . . . . . . . . . . . . . . . . 
                         `, SpriteKind.Food)
-                    sprites.setDataString(powerUp, "type", "S")
-                    animation.runImageAnimation(
-                    powerUp,
-                    [img`
+                        sprites.setDataString(powerUp, "type", "S")
+                        animation.runImageAnimation(
+                            powerUp,
+                            [img`
                         . . . . . . . c c . . . . . . . 
                         . . . . . . . c c . . . . . . . 
                         . . . . . . c c c c . . . . . . 
@@ -579,7 +558,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . . c c c c . . c c c c . . . 
                         . . c c c . . . . . . c c c . . 
                         . . c c . . . . . . . . c c . . 
-                        `,img`
+                        `, img`
                         . . . . . . . 4 4 . . . . . . . 
                         . . . . . . . 4 4 . . . . . . . 
                         . . . . . . 4 4 4 4 . . . . . . 
@@ -596,7 +575,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . . 4 4 4 4 . . 4 4 4 4 . . . 
                         . . 4 4 4 . . . . . . 4 4 4 . . 
                         . . 4 4 . . . . . . . . 4 4 . . 
-                        `,img`
+                        `, img`
                         . . . . . . . 4 4 . . . . . . . 
                         . . . . . . . 4 4 . . . . . . . 
                         . . . . . . 4 4 4 4 . . . . . . 
@@ -613,7 +592,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . . 4 4 4 4 . . 4 4 4 4 . . . 
                         . . 4 4 4 . . . . . . 4 4 4 . . 
                         . . 4 4 . . . . . . . . 4 4 . . 
-                        `,img`
+                        `, img`
                         . . . . . . . e e . . . . . . . 
                         . . . . . . . e e . . . . . . . 
                         . . . . . . e e e e . . . . . . 
@@ -631,19 +610,66 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                         . . e e e . . . . . . e e e . . 
                         . . e e . . . . . . . . e e . . 
                         `],
-                    100,
-                    true
-                    )
-                    tiles.placeOnTile(powerUp, location)
-                    tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
+                            100,
+                            true
+                        )
+                        tiles.placeOnTile(powerUp, location)
+                        tiles.setTileAt(location.getNeighboringLocation(CollisionDirection.Top), assets.tile`transparency16`)
+                    }
+                } else {
+                    tiles.setTileAt(location, assets.tile`transparency16`)
+                    tiles.setWallAt(location, false)
                 }
-            } else {
-                tiles.setTileAt(location, assets.tile`transparency16`)
-                tiles.setWallAt(location, false)
             }
         }
-    }
-})
+    })
+    game.onUpdate(function () {
+        if (sprites.readDataNumber(Player, "power") > 0) {
+            Player.setImage(img`
+                    9999999999999999
+                    9999999999999999
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222229999922229
+                    9222229999922229
+                    9222229999922229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9222222222222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    9922222299222229
+                    `)
+            sprites.setDataNumber(Player, "dtpower", sprites.readDataNumber(Player, "power"))
+            mSpr.setFlag(SpriteFlag.Invisible, true)
+            mSprBig.setFlag(SpriteFlag.Invisible, false)
+            if (!hasMovedUp) {
+                Player.y -= 16;
+                hasMovedUp = true;
+            }
+        } else {
+            hasMovedUp = false;
+        }
+    })
 }
 function FlagPole() {
     game.onUpdate(function () {
@@ -694,6 +720,8 @@ function FlagPole() {
 function die() {
     dead = true
     Player.setFlag(SpriteFlag.Ghost, true)
+    mSpr.setFlag(SpriteFlag.Invisible, false)
+    mSprBig.setFlag(SpriteFlag.Invisible, true)
     music.stopAllSounds()
     Player.vy = 0
     Player.ay = 0
