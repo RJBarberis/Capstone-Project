@@ -680,6 +680,7 @@ function FlagPole() {
                     Player.vx = 0
                     Player.ax = 0
                     Player.x = value5.left
+                    controller.moveSprite(Player, 0, 0)
                 }
             }
         } else {
